@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #0073e6;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .featured-jobs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .job-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .job-card:hover {
+            transform: scale(1.05);
+        }
+
+        .job-card h3 {
+            color: #0073e6;
+            margin: 0 0 10px;
+        }
+
+        .job-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        #searchBar {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            width: 80%;
+            max-width: 500px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="file"],
+        form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form button {
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        form button:hover {
+            background-color: #005bb5;
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to JobBoard</h1>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#jobList">Jobs</a>
+            <a href="#apply">Apply</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="featured">
+            <h2 class="section-title">Featured Jobs</h2>
+            <div class="featured-jobs" id="featuredJobs"></div>
+        </section>
+
+        <section id="jobList">
+            <h2 class="section-title">Search for Jobs</h2>
+            <input type="text" id="searchBar" placeholder="Search for jobs...">
+            <div class="featured-jobs" id="jobResults"></div>
+        </section>
+
+        <section id="apply">
+            <h2 class="section-title">Apply for a Job</h2>
+            <form id="applicationForm">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" placeholder="Enter your name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+
+                <label for="resume">Upload Resume:</label>
+                <input type="file" id="resume" required>
+
+                <button type="submit">Submit Application</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 JobBoard. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const jobs = [
+            { title: "Frontend Developer", company: "WebWorks", location: "Remote" },
+            { title: "Data Scientist", company: "AI Labs", location: "San Francisco" },
+            { title: "Marketing Manager", company: "Biz Solutions", location: "New York" },
+            { title: "Software Engineer", company: "Tech Corp", location: "Remote" },
+            { title: "Product Manager", company: "Innovate Inc", location: "Seattle" },
+            { title: "UX Designer", company: "Creative Minds", location: "Chicago" },
+            { title: "DevOps Engineer", company: "CloudNet", location: "Austin" },
+            { title: "Cybersecurity Analyst", company: "SecureBase", location: "Washington DC" },
+            { title: "Business Analyst", company: "GrowthEdge", location: "Boston" },
+            { title: "Graphic Designer", company: "DesignWorks", location: "Remote" },
+            { title: "AI Researcher", company: "NextGen AI", location: "Palo Alto" },
+            { title: "Backend Developer", company: "CodeSphere", location: "Los Angeles" },
+            { title: "IT Support Specialist", company: "HelpDeskPro", location: "Phoenix" },
+            { title: "Sales Representative", company: "GlobalReach", location: "Miami" },
+            { title: "Technical Writer", company: "DocuPro", location: "Remote" }
+        ];
+
+        const featuredJobsContainer = document.getElementById("featuredJobs");
+        const jobResultsContainer = document.getElementById("jobResults");
+
+        const displayJobs = (container, filter = "") => {
+            container.innerHTML = "";
+            jobs.filter(job => job.title.toLowerCase().includes(filter.toLowerCase()))
+                .forEach(job => {
+                    const jobCard = document.createElement("div");
+                    jobCard.className = "job-card";
+                    jobCard.innerHTML = `
+                        <h3>${job.title}</h3>
+                        <p>Company: ${job.company}</p>
+                        <p>Location: ${job.location}</p>
+                    `;
+                    container.appendChild(jobCard);
+                });
+        };
+
+        displayJobs(featuredJobsContainer);
+
+        const searchBar = document.getElementById("searchBar");
+        searchBar.addEventListener("input", (e) => {
+            displayJobs(jobResultsContainer, e.target.value);
+        });
+
+        const applicationForm = document.getElementById("applicationForm");
+        applicationForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+
+            if (name && email) {
+                alert(`Thank you, ${name}! Your application has been submitted successfully.`);
+                applicationForm.reset();
+            } else {
+                alert("Please fill out all required fields.");
+            }
+        });
+    </script>
+</body>
+</html>
